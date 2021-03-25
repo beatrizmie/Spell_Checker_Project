@@ -1,3 +1,4 @@
+from tqdm import tqdm
 import re
 import json
 
@@ -73,7 +74,7 @@ def limpa_meta(texto):
 
 
 def limpa_math(texto):
-    pattern = r"<math>(?:.|\s)*?</math>"
+    pattern = r"<math>*?</math>"
     repl = r" "
     matcher = re.compile(pattern)
     texto = matcher.sub(repl, texto)
@@ -82,7 +83,17 @@ def limpa_math(texto):
 
 
 def limpa_ref(texto):
-    pattern = r"<ref>(?:.|\s)*?</ref>|<ref(?:.|\s)*?/>|<ref(?:.|\s)*?>(?:.|\s)*?</ref>"
+    pattern = r"<ref>.*?</ref>"
+    repl = r" "
+    matcher = re.compile(pattern)
+    texto = matcher.sub(repl, texto)
+
+    pattern = r"<ref.*?/>"
+    repl = r" "
+    matcher = re.compile(pattern)
+    texto = matcher.sub(repl, texto)
+
+    pattern = r"<ref.*?>.*?</ref>"
     repl = r" "
     matcher = re.compile(pattern)
     texto = matcher.sub(repl, texto)
@@ -109,7 +120,7 @@ def limpa_br(texto):
 
 
 def limpa_small(texto):
-    pattern = r"<small>(?:.|\s)*?</small>"
+    pattern = r"<small>.*?</small>"
     repl = r" "
     matcher = re.compile(pattern)
     texto = matcher.sub(repl, texto)
@@ -118,7 +129,7 @@ def limpa_small(texto):
 
 
 def limpa_big(texto):
-    pattern = r"<big>(?:.|\s)*?</big>"
+    pattern = r"<big>.*?</big>"
     repl = r" "
     matcher = re.compile(pattern)
     texto = matcher.sub(repl, texto)
@@ -270,7 +281,7 @@ def limpa_letras_avulcas(texto):
 
 
 def so_palavras(texto):
-    pattern = r"(?:^|\n|\s)[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]*[^A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ -`'’]+[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]*"
+    pattern = r"(?:^|\n|\s)[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]*[^A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ -`'’]+[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]*|[\[\]]+"
     repl = r" "
     matcher = re.compile(pattern)
     return matcher.sub(repl, texto)
@@ -285,6 +296,7 @@ def coloca_em_uma_linha(texto):
 
 
 def limpa_texto(texto):
+
     texto = limpa_meta(texto)
     texto = limpa_wikilinks(texto)
     texto = limpa_templates(texto)
@@ -312,3 +324,12 @@ def limpa_texto(texto):
     texto = coloca_em_uma_linha(texto)
 
     return texto
+
+
+print(data[-1])
+clean = []
+for i in tqdm(range(len(data))):
+    clean.append(limpa_texto(data[i]["body"]))
+
+with open("dump_small_clean.jsonln", "w") as fp:
+    json.dump(clean, fp)
