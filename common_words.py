@@ -47,7 +47,7 @@ def tag_words(text):
 
 
 def limpa_tokens(tokens):
-    # tokens = minusculas(tokens)
+    tokens = minusculas(tokens)
     tokens = remove_digitos(tokens)
     tokens = pega_palavras(tokens)
     tokens = stop_words(tokens)
