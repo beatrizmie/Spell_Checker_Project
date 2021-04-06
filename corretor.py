@@ -12,10 +12,12 @@ LOWERCASE_OTHERS = ['ç', 'á', 'â', ]  # etc.
 UPPERCASE_OTHERS = [x.upper() for x in LOWERCASE_OTHERS]
 LETTERS = LOWERCASE + UPPERCASE + LOWERCASE_OTHERS + UPPERCASE_OTHERS
 
+
 def read_data(filename):
     with open(filename, 'r') as file:
         data = [json.loads(line) for line in file]
     return data
+
 
 def levenshtein(s1, s2):
     n1 = len(s1) + 1
@@ -57,19 +59,19 @@ def levenshtein_2(s1, s2):
 
 def edit1(text):
     words = []
-    
+
     # Fase 1: as remoçoes.
     for p in range(len(text)):
         new_word = text[:p] + text[p + 1:]
         if len(new_word) > 0:
             words.append(new_word)
-        
+
     # Fase 2: as adições.
     for p in range(len(text) + 1):
         for c in LETTERS:
             new_word = text[:p] + c + text[p:]
             words.append(new_word)
-    
+
     # Fase 3: as substituições.
     for p in range(len(text)):
         orig_c = text[p]
@@ -77,12 +79,11 @@ def edit1(text):
             if orig_c != c:
                 new_word = text[:p] + c + text[p + 1:]
                 words.append(new_word)
-    
+
     return set(words)
 
 
-def edit2(text):
-    words1 = edit1(text)
+def edit2(words1, text):
     words2 = set()
     for w in words1:
         candidate_words2 = edit1(w)
@@ -91,21 +92,66 @@ def edit2(text):
     words2 -= set([text])
     return words2
 
+
 def main():
 
     arquivo = 'vocab.jsonln'
     with open(arquivo, 'r') as f:
-        vocab = list(json.load(f))
+        vocab = json.load(f)
 
-    word = ' '.join(sys.argv[1:])
+    frase = ' '.join(sys.argv[1:])
 
-    print(word)
+    words = frase.split(" ")
 
-    candidatos_1 = [w for w in edit1(word) if w in vocab]
-    candidatos_2 = [w for w in edit2(word) if w in vocab]
+    for i, word in enumerate(words):
 
-    print(candidatos_1)
-    print(candidatos_2)
+        if word not in vocab:
+
+            print("errado: ", word)
+
+            words1 = edit1(word)
+
+            candidatos_1 = [w for w in words1 if w in vocab]
+
+            if (len(candidatos_1) == 0):
+
+                words2 = edit2(words1, word)
+
+                candidatos_2 = [w for w in words2 if w in vocab]
+
+                w = 0
+
+                for jw in candidatos_2:
+
+                    if w == 0:
+                        w = jw
+                    else:
+
+                        if vocab[jw] > vocab[w]:
+                            w = jw
+
+                words[i] = w
+
+            else:
+
+                w = 0
+
+                for jw in candidatos_1:
+
+                    if w == 0:
+                        w = jw
+                    else:
+
+                        if vocab[jw] > vocab[w]:
+                            w = jw
+
+                words[i] = w
+
+        else:
+            print("certo: ", word)
+
+    print(words)
+
 
 if __name__ == '__main__':
     main()

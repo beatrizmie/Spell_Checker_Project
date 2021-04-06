@@ -41,7 +41,7 @@ def stop_words(tokens):
 def tag_words(text):
     remove_tags = ['DT', 'TO', 'IN']
     tagged = pos_tag(text)
-    return [tag[0] for tag in tagged if not tag[1] in remove_tags]
+    return [tag[0] for tag in tqdm(tagged) if not tag[1] in remove_tags]
 
 # Limpa os tokens
 
@@ -73,7 +73,7 @@ def main():
     word_counts_list_sorted = sorted(
         word_counts_list, key=lambda x: (-x[1], x[0]))
 
-    vocab = dict(word_counts_list_sorted[0:3000])
+    vocab = dict(word_counts_list_sorted[:])
 
     with open("vocab.jsonln", "w") as fp:
         json.dump(vocab, fp)
