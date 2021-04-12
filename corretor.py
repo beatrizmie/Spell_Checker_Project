@@ -8,7 +8,7 @@ REPL_COST = 1
 
 LOWERCASE = [chr(x) for x in range(ord('a'), ord('z') + 1)]
 UPPERCASE = [chr(x) for x in range(ord('A'), ord('Z') + 1)]
-LOWERCASE_OTHERS = ['ç', 'á', 'â', ]  # etc.
+LOWERCASE_OTHERS = ['ç', 'á', 'â', 'à', 'ã', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú']
 UPPERCASE_OTHERS = [x.upper() for x in LOWERCASE_OTHERS]
 LETTERS = LOWERCASE + UPPERCASE + LOWERCASE_OTHERS + UPPERCASE_OTHERS
 
@@ -60,7 +60,7 @@ def levenshtein_2(s1, s2):
 def edit1(text):
     words = []
 
-    # Fase 1: as remoçoes.
+    # Fase 1: as remoções.
     for p in range(len(text)):
         new_word = text[:p] + text[p + 1:]
         if len(new_word) > 0:
@@ -99,59 +99,43 @@ def main():
     with open(arquivo, 'r') as f:
         vocab = json.load(f)
 
-    frase = ' '.join(sys.argv[1:])
-
+    # frase = ' '.join(sys.argv[1:])
+    frase = input("Digite uma frase: ")
     words = frase.split(" ")
 
     for i, word in enumerate(words):
 
         if word not in vocab:
-
-            print("errado: ", word)
-
             words1 = edit1(word)
-
             candidatos_1 = [w for w in words1 if w in vocab]
 
             if (len(candidatos_1) == 0):
-
                 words2 = edit2(words1, word)
-
                 candidatos_2 = [w for w in words2 if w in vocab]
-
                 w = 0
 
                 for jw in candidatos_2:
-
                     if w == 0:
                         w = jw
                     else:
-
                         if vocab[jw] > vocab[w]:
                             w = jw
 
                 words[i] = w
 
             else:
-
                 w = 0
-
                 for jw in candidatos_1:
 
                     if w == 0:
                         w = jw
                     else:
-
                         if vocab[jw] > vocab[w]:
                             w = jw
 
                 words[i] = w
 
-        else:
-            print("certo: ", word)
-
-    print(words)
-
+    print("Você quis dizer:", *words, "?")
 
 if __name__ == '__main__':
     main()
