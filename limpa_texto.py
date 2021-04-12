@@ -2,7 +2,7 @@ from tqdm import tqdm
 import re
 import json
 
-arquivo = 'C:/Users/biaku/Documents/INSPER/7semestre/Processamento de Linguagem Natural/Aula 4/dump_small.jsonln'
+arquivo = 'dump_small.jsonln'
 
 data = []
 with open(arquivo, 'r') as file:
